@@ -4,3 +4,4 @@ gunicorn
 Werkzeug
 itsdangerous
 cryptography
+flask_login
