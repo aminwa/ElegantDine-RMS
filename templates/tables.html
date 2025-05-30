@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Tables - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>TABLE MANAGEMENT</h1>
+        {% if current_user.is_admin() %}
+        <a href="{{ url_for('main.add_table') }}" class="btn btn-primary">
+            <i data-feather="plus"></i>
+            Add Table
+        </a>
+        {% endif %}
+    </div>
+
+    {% if tables %}
+    <div class="tables-grid">
+        {% for table in tables %}
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Table {{ table.number }}</h3>
+                <span class="status-badge {{ table.status }}">{{ table.status.title() }}</span>
+            </div>
+            
+            <div class="table-info">
+                <div class="info-item">
+                    <i data-feather="users"></i>
+                    <span>Capacity: {{ table.capacity }}</span>
+                </div>
+                
+                <div class="info-item">
+                    <i data-feather="calendar"></i>
+                    <span>Added: {{ table.created_at.strftime('%Y-%m-%d') }}</span>
+                </div>
+            </div>
+
+            <div class="table-stats">
+                <div class="stat">
+                    <span class="stat-number">{{ table.reservations | length }}</span>
+                    <span class="stat-label">Total Reservations</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">{{ table.orders | length }}</span>
+                    <span class="stat-label">Total Orders</span>
+                </div>
+            </div>
+
+            {% if current_user.is_admin() %}
+            <div class="table-actions">
+                <a href="{{ url_for('main.edit_table', table_id=table.id) }}" class="btn btn-secondary btn-sm">
+                    <i data-feather="edit-2"></i>
+                    Edit
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i data-feather="grid-3x3"></i>
+        <h2>No Tables</h2>
+        <p>Start by adding your first table.</p>
+        {% if current_user.is_admin() %}
+        <a href="{{ url_for('main.add_table') }}" class="btn btn-primary">Add Table</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

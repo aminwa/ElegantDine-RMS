@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}{% if edit_mode %}Edit{% else %}New{% endif %} Order - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>{% if edit_mode %}EDIT ORDER{% else %}NEW ORDER{% endif %}</h1>
+        <a href="{{ url_for('main.orders') }}" class="btn btn-secondary">
+            <i data-feather="arrow-left"></i>
+            Back to Orders
+        </a>
+    </div>
+
+    {% if edit_mode %}
+    <!-- Edit Order Mode -->
+    <div class="order-edit-container">
+        <div class="order-info-card">
+            <h3>Order Information</h3>
+            <div class="order-details">
+                <div class="detail-item">
+                    <strong>Order Number:</strong> {{ order.order_number }}
+                </div>
+                <div class="detail-item">
+                    <strong>Table:</strong> Table {{ order.table.number }}
+                </div>
+                <div class="detail-item">
+                    <strong>Staff:</strong> {{ order.staff_member.username }}
+                </div>
+                <div class="detail-item">
+                    <strong>Total:</strong> ${{ "%.2f"|format(order.total_amount) }}
+                </div>
+            </div>
+
+            <!-- Status Update Form -->
+            <form method="POST" class="status-form">
+                <input type="hidden" name="action" value="update_status">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Order Status</label>
+                        <select id="status" name="status" class="form-input">
+                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Preparing</option>
+                            <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Ready</option>
+                            <option value="served" {% if order.status == 'served' %}selected{% endif %}>Served</option>
+                            <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Paid</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Order Items -->
+        <div class="order-items-card">
+            <h3>Order Items</h3>
+            {% if order.items %}
+            <div class="order-items-list">
+                {% for item in order.items %}
+                <div class="order-item">
+                    <div class="item-info">
+                        <h4>{{ item.menu_item.name }}</h4>
+                        <p>Quantity: {{ item.quantity }} × ${{ "%.2f"|format(item.unit_price) }}</p>
+                        {% if item.special_instructions %}
+                        <p class="special-instructions">Special: {{ item.special_instructions }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="item-total">
+                        ${{ "%.2f"|format(item.subtotal) }}
+                    </div>
+                    <div class="item-actions">
+                        <a href="{{ url_for('main.remove_order_item', item_id=item.id) }}" 
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Remove this item from the order?')">
+                            <i data-feather="trash-2"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-items">No items added to this order yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Add Item Form -->
+        <div class="add-item-card">
+            <h3>Add Item to Order</h3>
+            <form method="POST" class="add-item-form">
+                <input type="hidden" name="action" value="add_item">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="menu_item_id">Menu Item</label>
+                        <select id="menu_item_id" name="menu_item_id" required class="form-input">
+                            <option value="">Select Item</option>
+                            {% for item in menu_items %}
+                            <option value="{{ item.id }}" data-price="{{ item.price }}">
+                                {{ item.name }} - ${{ "%.2f"|format(item.price) }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" name="quantity" min="1" value="1" required class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="special_instructions">Special Instructions</label>
+                    <input type="text" id="special_instructions" name="special_instructions" 
+                           class="form-input" placeholder="No onions, extra spicy, etc.">
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i data-feather="plus"></i>
+                    Add Item
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- New Order Mode -->
+    <form method="POST" class="form-card">
+        <div class="form-group">
+            <label for="table_id">Table *</label>
+            <select id="table_id" name="table_id" required class="form-input">
+                <option value="">Select Table</option>
+                {% for table in tables %}
+                <option value="{{ table.id }}">
+                    Table {{ table.number }} ({{ table.status.title() }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Order Notes</label>
+            <textarea id="notes" name="notes" class="form-input" rows="3"
+                      placeholder="Any special notes for this order..."></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i data-feather="shopping-cart"></i>
+                Create Order
+            </button>
+            <a href="{{ url_for('main.orders') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

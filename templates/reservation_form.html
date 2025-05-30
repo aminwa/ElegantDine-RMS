@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}New Reservation - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>NEW RESERVATION</h1>
+        <a href="{{ url_for('main.reservations') }}" class="btn btn-secondary">
+            <i data-feather="arrow-left"></i>
+            Back to Reservations
+        </a>
+    </div>
+
+    <form method="POST" class="form-card">
+        <div class="form-section">
+            <h3>Customer Information</h3>
+            
+            <div class="form-group">
+                <label for="customer_name">Customer Name *</label>
+                <input type="text" id="customer_name" name="customer_name" required class="form-input">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="customer_email">Email</label>
+                    <input type="email" id="customer_email" name="customer_email" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="customer_phone">Phone</label>
+                    <input type="tel" id="customer_phone" name="customer_phone" class="form-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Reservation Details</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reservation_date">Date *</label>
+                    <input type="date" id="reservation_date" name="reservation_date" required class="form-input"
+                           min="{{ date.today().isoformat() }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="reservation_time">Time *</label>
+                    <input type="time" id="reservation_time" name="reservation_time" required class="form-input">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="party_size">Party Size *</label>
+                    <input type="number" id="party_size" name="party_size" min="1" required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="table_id">Table *</label>
+                    <select id="table_id" name="table_id" required class="form-input">
+                        <option value="">Select Table</option>
+                        {% for table in tables %}
+                        <option value="{{ table.id }}">
+                            Table {{ table.number }} (Capacity: {{ table.capacity }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="special_requests">Special Requests</label>
+                <textarea id="special_requests" name="special_requests" class="form-input" rows="3"
+                          placeholder="Any special dietary requirements, celebrations, or other requests..."></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i data-feather="calendar-plus"></i>
+                Create Reservation
+            </button>
+            <a href="{{ url_for('main.reservations') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Set minimum date to today
+document.getElementById('reservation_date').min = new Date().toISOString().split('T')[0];
+
+// Filter tables based on party size
+document.getElementById('party_size').addEventListener('change', function() {
+    const partySize = parseInt(this.value);
+    const tableSelect = document.getElementById('table_id');
+    const options = tableSelect.querySelectorAll('option');
+    
+    options.forEach(option => {
+        if (option.value === '') return; // Skip placeholder option
+        
+        const capacityMatch = option.textContent.match(/Capacity: (\d+)/);
+        if (capacityMatch) {
+            const capacity = parseInt(capacityMatch[1]);
+            option.style.display = capacity >= partySize ? 'block' : 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

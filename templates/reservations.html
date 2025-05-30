@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Reservations - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>RESERVATIONS</h1>
+        <a href="{{ url_for('main.add_reservation') }}" class="btn btn-primary">
+            <i data-feather="plus"></i>
+            New Reservation
+        </a>
+    </div>
+
+    {% if reservations %}
+    <div class="reservations-table">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Date & Time</th>
+                    <th>Table</th>
+                    <th>Party Size</th>
+                    <th>Status</th>
+                    <th>Contact</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                <tr>
+                    <td>
+                        <div class="customer-info">
+                            <strong>{{ reservation.customer_name }}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="datetime-info">
+                            <div>{{ reservation.reservation_date.strftime('%Y-%m-%d') }}</div>
+                            <div class="time">{{ reservation.reservation_time.strftime('%H:%M') }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="table-number">Table {{ reservation.table.number }}</span>
+                    </td>
+                    <td>
+                        <span class="party-size">{{ reservation.party_size }} guests</span>
+                    </td>
+                    <td>
+                        <span class="status-badge {{ reservation.status }}">
+                            {{ reservation.status.title() }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="contact-info">
+                            {% if reservation.customer_email %}
+                            <div>{{ reservation.customer_email }}</div>
+                            {% endif %}
+                            {% if reservation.customer_phone %}
+                            <div>{{ reservation.customer_phone }}</div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewReservation({{ reservation.id }})">
+                                <i data-feather="eye"></i>
+                                View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i data-feather="calendar"></i>
+        <h2>No Reservations</h2>
+        <p>No reservations have been made yet.</p>
+        <a href="{{ url_for('main.add_reservation') }}" class="btn btn-primary">Create First Reservation</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Reservation Details Modal -->
+<div id="reservationModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Reservation Details</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div id="reservationDetails" class="modal-body">
+            <!-- Details will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+function viewReservation(reservationId) {
+    // This would typically fetch reservation details via AJAX
+    // For now, we'll show a placeholder
+    const modal = document.getElementById('reservationModal');
+    const details = document.getElementById('reservationDetails');
+    
+    details.innerHTML = `
+        <p>Reservation details for ID: ${reservationId}</p>
+        <p>This would show full reservation information including special requests.</p>
+    `;
+    
+    modal.style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('reservationModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('reservationModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

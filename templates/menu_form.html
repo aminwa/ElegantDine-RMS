@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{% if item %}Edit{% else %}Add{% endif %} Menu Item - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>{% if item %}EDIT MENU ITEM{% else %}ADD MENU ITEM{% endif %}</h1>
+        <a href="{{ url_for('main.menu') }}" class="btn btn-secondary">
+            <i data-feather="arrow-left"></i>
+            Back to Menu
+        </a>
+    </div>
+
+    <form method="POST" class="form-card">
+        <div class="form-group">
+            <label for="name">Item Name *</label>
+            <input type="text" id="name" name="name" required class="form-input"
+                   value="{% if item %}{{ item.name }}{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" class="form-input" rows="3">{% if item %}{{ item.description }}{% endif %}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">Price *</label>
+                <input type="number" id="price" name="price" step="0.01" min="0" required class="form-input"
+                       value="{% if item %}{{ item.price }}{% endif %}">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category *</label>
+                <select id="category" name="category" required class="form-input">
+                    <option value="">Select Category</option>
+                    <option value="appetizer" {% if item and item.category == 'appetizer' %}selected{% endif %}>Appetizer</option>
+                    <option value="main" {% if item and item.category == 'main' %}selected{% endif %}>Main Course</option>
+                    <option value="dessert" {% if item and item.category == 'dessert' %}selected{% endif %}>Dessert</option>
+                    <option value="beverage" {% if item and item.category == 'beverage' %}selected{% endif %}>Beverage</option>
+                </select>
+            </div>
+        </div>
+
+        {% if item %}
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" id="available" name="available" {% if item.available %}checked{% endif %}>
+                <label for="available">Available for ordering</label>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i data-feather="save"></i>
+                {% if item %}Update Item{% else %}Add Item{% endif %}
+            </button>
+            <a href="{{ url_for('main.menu') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

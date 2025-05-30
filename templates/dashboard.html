@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>DASHBOARD</h1>
+        <p>Welcome back, {{ current_user.username }}!</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        {% if current_user.is_admin() %}
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i data-feather="menu"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.total_menu_items }}</h3>
+                <p>Menu Items</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i data-feather="grid-3x3"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.total_tables }}</h3>
+                <p>Tables</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i data-feather="users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.total_staff }}</h3>
+                <p>Staff Members</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i data-feather="calendar"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.today_reservations }}</h3>
+                <p>Today's Reservations</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i data-feather="shopping-cart"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.active_orders }}</h3>
+                <p>Active Orders</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dashboard-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-grid">
+            {% if current_user.is_admin() %}
+            <a href="{{ url_for('main.add_menu_item') }}" class="action-card">
+                <i data-feather="plus-circle"></i>
+                <h3>Add Menu Item</h3>
+                <p>Create new dish or beverage</p>
+            </a>
+
+            <a href="{{ url_for('main.add_table') }}" class="action-card">
+                <i data-feather="plus-square"></i>
+                <h3>Add Table</h3>
+                <p>Register new table</p>
+            </a>
+
+            <a href="{{ url_for('auth.register') }}" class="action-card">
+                <i data-feather="user-plus"></i>
+                <h3>Add Staff</h3>
+                <p>Register new staff member</p>
+            </a>
+            {% endif %}
+
+            <a href="{{ url_for('main.add_reservation') }}" class="action-card">
+                <i data-feather="calendar-plus"></i>
+                <h3>New Reservation</h3>
+                <p>Book table for customer</p>
+            </a>
+
+            <a href="{{ url_for('main.add_order') }}" class="action-card">
+                <i data-feather="shopping-bag"></i>
+                <h3>New Order</h3>
+                <p>Take customer order</p>
+            </a>
+
+            <a href="{{ url_for('main.orders') }}" class="action-card">
+                <i data-feather="list"></i>
+                <h3>View Orders</h3>
+                <p>Manage active orders</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Orders - Restaurant Management System{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>ORDERS</h1>
+        <a href="{{ url_for('main.add_order') }}" class="btn btn-primary">
+            <i data-feather="plus"></i>
+            New Order
+        </a>
+    </div>
+
+    {% if orders %}
+    <div class="orders-table">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Table</th>
+                    <th>Staff</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>
+                        <strong>{{ order.order_number }}</strong>
+                    </td>
+                    <td>
+                        <span class="table-number">Table {{ order.table.number }}</span>
+                    </td>
+                    <td>
+                        {{ order.staff_member.username }}
+                    </td>
+                    <td>
+                        <span class="item-count">{{ order.items | length }} items</span>
+                    </td>
+                    <td>
+                        <span class="total-amount">${{ "%.2f"|format(order.total_amount) }}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge {{ order.status }}">
+                            {{ order.status.title() }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="datetime-info">
+                            <div>{{ order.created_at.strftime('%Y-%m-%d') }}</div>
+                            <div class="time">{{ order.created_at.strftime('%H:%M') }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{{ url_for('main.edit_order', order_id=order.id) }}" class="btn btn-secondary btn-sm">
+                                <i data-feather="edit-2"></i>
+                                Edit
+                            </a>
+                            <button class="btn btn-secondary btn-sm" onclick="viewOrderDetails({{ order.id }})">
+                                <i data-feather="eye"></i>
+                                View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i data-feather="shopping-cart"></i>
+        <h2>No Orders</h2>
+        <p>No orders have been placed yet.</p>
+        <a href="{{ url_for('main.add_order') }}" class="btn btn-primary">Create First Order</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Order Details Modal -->
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Order Details</h2>
+            <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+        </div>
+        <div id="orderDetails" class="modal-body">
+            <!-- Details will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+function viewOrderDetails(orderId) {
+    // This would typically fetch order details via AJAX
+    // For now, we'll show a placeholder
+    const modal = document.getElementById('orderModal');
+    const details = document.getElementById('orderDetails');
+    
+    details.innerHTML = `
+        <p>Order details for ID: ${orderId}</p>
+        <p>This would show all order items, quantities, and special instructions.</p>
+    `;
+    
+    modal.style.display = 'flex';
+}
+
+function closeOrderModal() {
+    document.getElementById('orderModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('orderModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}
